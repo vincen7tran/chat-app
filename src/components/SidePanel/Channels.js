@@ -12,6 +12,20 @@ class Channels extends React.Component {
     user: this.props.currentUser
   }
 
+  componentDidMount() {
+    this.addListeners();
+  }
+
+  addListeners = () => {
+    const loadedChannels = [];
+    const { channelsRef } = this.state;
+
+    channelsRef.on('child_added', snap => {
+      loadedChannels.push(snap.val());
+      this.setState({ channels: loadedChannels });
+    });
+  }
+
   addChannel = () => {
     const { channelsRef, channelName, channelDetails } = this.state;
     const { displayName, photoURL } = this.state.user;
@@ -49,6 +63,25 @@ class Channels extends React.Component {
     }
   }
 
+  displayChannels = () => {
+    const { channels } = this.state;
+
+    return channels.length > 0 && channels.map(channel => {
+      const { id, name } = channel;
+
+      return (
+        <Menu.Item
+          key={id}
+          onClick={() => console.log(channel)}
+          name={name}
+          style={{ opacity: 0.7 }}
+        >
+          #{name}
+        </Menu.Item>
+      )
+    });
+  }
+
   isFormValid = () => {
     const { channelName, channelDetails } = this.state;
 
@@ -78,6 +111,7 @@ class Channels extends React.Component {
             ({ channels.length }) <Icon name="add" onClick={this.openModal} />
           </Menu.Item>
           {/* Channels */}
+          {this.displayChannels()}
         </Menu.Menu>
 
         {/* Add Channel Modal*/}
