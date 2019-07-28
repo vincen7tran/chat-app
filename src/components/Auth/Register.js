@@ -1,5 +1,6 @@
 import React from "react";
 import firebase from "../../firebase";
+import md5 from 'md5';
 import {
   Grid,
   Form,
@@ -18,7 +19,8 @@ class Register extends React.Component {
     password: "",
     passwordConfirmation: "",
     errors: [],
-    loading: false
+    loading: false,
+    usersRef: firebase.database().ref('users')
   };
 
   isFormValid = () => {
@@ -88,14 +90,26 @@ class Register extends React.Component {
     if (this.isFormValid()) {
       this.setState({ errors: [], loading: true });
 
-      const { email, password } = this.state;
+      const { username, email, password, errors } = this.state;
 
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
         .then(createdUser => {
           console.log(createdUser);
-          this.setState({ loading: false });
+          createdUser.user.updateProfile({
+            displayName: username,
+            photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`
+          })
+            .then(() => {
+              this.saveUser(createdUser).then(() => {
+                console.log('User Saved');
+              })
+            })
+            .catch(err => {
+              console.error(err);
+              this.setState({ errors: [...errors, err], loading: false });
+            });
         })
         .catch(err => {
           console.error(err);
@@ -105,13 +119,22 @@ class Register extends React.Component {
     }
   };
 
+  saveUser = createdUser => {
+    const { usersRef } = this.state;
+    const { uid, displayName, photoURL } = createdUser.user;
+    
+    return usersRef.child(uid).set({
+      name: displayName,
+      avatar: photoURL
+    });
+  }
+
   render() {
     const {
       username,
       email,
       password,
       passwordConfirmation,
-      errors,
       loading
     } = this.state;
 
