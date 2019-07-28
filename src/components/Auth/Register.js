@@ -3,10 +3,18 @@ import { Grid, Form, Segment, Button, Header, Message, Icon } from 'semantic-ui-
 import { Link } from 'react-router-dom';
 
 class Register extends React.Component {
-  state = {}
+  state = {
+    username: '',
+    email: '',
+    password: '',
+    passwordConfirmation: ''
+  }
 
-  handleChange = () => {
+  handleChange = e => {
+    const { name, value } = e.target;
+    console.log(name, value);
 
+    this.setState({ [name]: value });
   }
 
   render() {
