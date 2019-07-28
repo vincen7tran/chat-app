@@ -6,6 +6,7 @@ import Register from './components/Auth/Register';
 import registerServiceWorker from './registerServiceWorker';
 import firebase from './firebase';
 import rootReducer from './reducers';
+import Spinner from './Spinner';
 
 import 'semantic-ui-css/semantic.min.css';
 
@@ -30,7 +31,9 @@ class Root extends React.Component {
   }
 
   render() {
-    return (
+    const { isLoading } = this.props;
+
+    return isLoading ? <Spinner/> : (
       <Switch>
         <Route exact path="/" component={App} />
         <Route path="/login" component={Login} />
@@ -40,7 +43,15 @@ class Root extends React.Component {
   }
 }
 
-const RootWithAuth = withRouter(connect(null, { setUser })(Root));
+const mapStateToProps = state => {
+  const { isLoading } = state.user;
+
+  return {
+    isLoading
+  };
+};
+
+const RootWithAuth = withRouter(connect(mapStateToProps, { setUser })(Root));
 
 ReactDOM.render(
 <Provider store={store}>
