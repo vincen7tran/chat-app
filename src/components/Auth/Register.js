@@ -8,7 +8,52 @@ class Register extends React.Component {
     username: '',
     email: '',
     password: '',
-    passwordConfirmation: ''
+    passwordConfirmation: '',
+    errors: []
+  }
+
+  isFormValid = () => {
+    const errors = [];
+    let error;
+
+    if (this.isFormEmpty()) {
+      error = { message: 'Fill in all fields' };
+
+      this.setState({ errors: [...errors, error]});
+
+      return false;
+    } else if (!this.isPasswordValid()) {
+      error = { message: 'Password is invalid'};
+
+      this.setState({ errors: [...errors, error] });
+
+      return false;
+    }
+
+    return true;
+  }
+
+  isFormEmpty = () => {
+    const { username, email, password, passwordConfirmation } = this.state;
+
+    return !username.length || !email.length || !password.length || !passwordConfirmation;
+  }
+
+  isPasswordValid = () => {
+    const { password, passwordConfirmation } = this.state;
+
+    if (password.length < 6 || passwordConfirmation < 6) return false;
+    if (password !== passwordConfirmation) return false;
+
+    return true;
+  }
+
+  displayErrors = () => {
+    const { errors } = this.state;
+    
+    return errors.map((error, i) => {
+      return <p key={i}>{error.message}</p>
+    });
   }
 
   handleChange = e => {
@@ -18,18 +63,20 @@ class Register extends React.Component {
   }
 
   handleSubmit = e => {
-    const { email, password } = this.state;
-
-    e.preventDefault();
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(createdUser => {
-        console.log(createdUser);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    if (this.isFormValid()) {
+      const { email, password } = this.state;
+  
+      e.preventDefault();
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(createdUser => {
+          console.log(createdUser);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    }
   }
 
   render() {
@@ -59,6 +106,12 @@ class Register extends React.Component {
               <Button color="orange" fluid size="large">Submit</Button>
             </Segment>
           </Form>
+          {this.state.errors.length > 0 && (
+            <Message error>
+              <h3>Error</h3>
+              {this.displayErrors()}
+            </Message>
+          )}
           <Message>Already a user? <Link to="/login">Login</Link></Message>
         </Grid.Column>
       </Grid>
