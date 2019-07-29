@@ -33,11 +33,11 @@ const App = ({ currentUser, channel }) => {
 
 const mapStateToProps = state => {
   const { currentUser } = state.user;
-  const { channel } = state;
+  const { currentChannel } = state.channel;
 
   return {
     currentUser,
-    channel
+    channel: currentChannel
   };
 };
 
