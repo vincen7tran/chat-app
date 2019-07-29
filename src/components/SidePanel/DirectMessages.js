@@ -80,6 +80,7 @@ class DirectMessages extends React.Component {
     }
 
     setCurrentChannel(channelData);
+    setPrivateChannel(true);
   }
 
   getChannelId = userId => {
@@ -104,7 +105,7 @@ class DirectMessages extends React.Component {
         {users.map(user => (
           <Menu.Item
             key={user.id}
-            onClick={() => console.log(user)}
+            onClick={() => this.changeChannel(user)}
             style={{ opacity: 0.7, fontStyle: 'italic'}}
           >
             <Icon name="circle" color={this.isUserOnline(user) ? 'green' : 'red'} />
