@@ -137,17 +137,23 @@ class Channels extends React.Component {
     const { setCurrentChannel, setPrivateChannel } = this.props;
 
     this.setActiveChannel(channel);
-    this.clearNotifications();
     setCurrentChannel(channel);
+    this.clearNotifications();
     setPrivateChannel(false);
 
     this.setState({ channel });
   }
 
   clearNotifications = () => {
-    const { notifications, channel } = this.state;
-    let idx = notifications.findIndex(notification => notification.id === channel.id);
+    const { notifications } = this.state;
 
+    let idx = notifications.findIndex(notification => {
+      const { activeChannel } = this.state;
+      console.log(notification.id, activeChannel);
+      return notification.id === activeChannel;
+    });
+
+    console.log('clear', idx);
     if (idx !== -1) {
       const updatedNotifications = [...notifications];
 
