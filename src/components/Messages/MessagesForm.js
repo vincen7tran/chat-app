@@ -1,5 +1,5 @@
 import React from 'react';
-import uuid from 'uuid';
+import uuid from 'uuid/v4';
 import firebase from '../../firebase';
 import { Segment, Button, Input } from 'semantic-ui-react';
 import FileModal from './FileModal';
@@ -78,7 +78,7 @@ class MessagesForm extends React.Component {
   uploadFile = (file, metadata) => {
     const { channel, storageRef, uploadTask }  = this.state;
     const { messagesRef } = this.props;
-    const filePath = `chat/public/${uuid().jpg}`;
+    const filePath = `chat/public/${uuid()}.jpg`;
 
     this.setState({
       uploadState: 'uploading',
