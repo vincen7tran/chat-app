@@ -7,6 +7,7 @@ import { setCurrentChannel } from '../../actions';
 class Channels extends React.Component {
   state = {
     channels: [],
+    activeChannel: '',
     modal: false,
     channelName: '',
     channelDetails: '',
@@ -33,7 +34,10 @@ class Channels extends React.Component {
     const { firstLoad, channels } = this.state;
     const { setCurrentChannel } = this.props;
 
-    if (firstLoad && channels.length > 0) setCurrentChannel(channels[0]);
+    if (firstLoad && channels.length > 0) {
+      setCurrentChannel(channels[0]);
+      this.setActiveChannel(channels[0]);
+    }
 
     this.setState({ firstLoad: false });
   }
@@ -77,12 +81,16 @@ class Channels extends React.Component {
 
   changeChannel = channel => {
     const { setCurrentChannel } = this.props;
-
+    this.setActiveChannel(channel);
     setCurrentChannel(channel);
   }
 
+  setActiveChannel = channel => {
+    this.setState({ activeChannel: channel.id });
+  }
+
   displayChannels = () => {
-    const { channels } = this.state;
+    const { channels, activeChannel } = this.state;
 
     return channels.length > 0 && channels.map(channel => {
       const { id, name } = channel;
@@ -93,8 +101,9 @@ class Channels extends React.Component {
           onClick={() => this.changeChannel(channel)}
           name={name}
           style={{ opacity: 0.7 }}
+          active={channel.id === activeChannel}
         >
-          #{name}
+          # {name}
         </Menu.Item>
       )
     });
